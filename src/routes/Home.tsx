@@ -5,7 +5,7 @@ import { useGetBooksQuery } from "../redux/book.api";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { data: books, isLoading } = useGetBooksQuery();
+  const { data: books } = useGetBooksQuery();
   const [bookId, setBookId] = useState("");
 
   const handleSearch = () => {
