@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const BookDetails = ({ bookId }: { bookId: number }) => {
   const [fetchBook, { data: book }] = useLazyGetBookDetailQuery();
-
   const [analyzeBook, { data: summary, isLoading }] = useGetAnalyzeMutation();
   const navigate = useNavigate();
   const [showAnalyze, setShowAnalyze] = useState(true);
@@ -17,17 +16,45 @@ const BookDetails = ({ bookId }: { bookId: number }) => {
     if (bookId) fetchBook({ book_id: bookId });
   }, [bookId, fetchBook]);
 
+  // Helper function to render rich content as HTML
+  const renderHtmlContent = (htmlContent: string) => (
+    <div
+      className="whitespace-pre-wrap"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  );
+
   return (
     <div className="p-6">
-      <Tabs defaultActiveKey="1">
+      <Tabs defaultActiveKey="1" className="w-full">
         <Tabs.TabPane tab="Content" key="1">
-          <pre className="whitespace-pre-wrap">{book?.response?.content}</pre>
+          <div className="overflow-auto max-h-96">
+            {/* Rendering the content as HTML */}
+            {book?.response?.content ? (
+              renderHtmlContent(book.response.content)
+            ) : (
+              <p>Loading content...</p>
+            )}
+          </div>
         </Tabs.TabPane>
+
         <Tabs.TabPane tab="Metadata" key="2">
-          <p>Title: {book?.response?.title}</p>
-          <p>Author: {book?.response?.author}</p>
-          {book?.response?.meta_data}
+          <div className="space-y-2">
+            <p>
+              <b>Title:</b> {book?.response?.title}
+            </p>
+            <p>
+              <b>Author:</b> {book?.response?.author}
+            </p>
+            {/* Render the metadata as HTML */}
+            {book?.response?.meta_data ? (
+              renderHtmlContent(book.response.meta_data)
+            ) : (
+              <p>Loading metadata...</p>
+            )}
+          </div>
         </Tabs.TabPane>
+
         <Tabs.TabPane tab="Analyze" key="3">
           {showAnalyze ? (
             <Button
@@ -43,10 +70,10 @@ const BookDetails = ({ bookId }: { bookId: number }) => {
             <>
               <Spin
                 size="large"
-                tip="AI is generating questions, please wait..."
+                tip="AI is analyzing content, please wait..."
                 spinning={isLoading}
               >
-                {summary?.response}
+                <div className="mt-4">{summary?.response}</div>
                 <Button
                   type="primary"
                   onClick={() => analyzeBook({ book_id: bookId })}
@@ -59,9 +86,13 @@ const BookDetails = ({ bookId }: { bookId: number }) => {
           )}
         </Tabs.TabPane>
       </Tabs>
-      <Button className="mt-4" onClick={() => navigate("/")}>
-        Back to Search
-      </Button>
+
+      {/* Back to Search Button */}
+      <div className="flex justify-center items-center pt-4">
+        <Button type="primary" className="mt-4" onClick={() => navigate("/")}>
+          Back to Search
+        </Button>
+      </div>
     </div>
   );
 };

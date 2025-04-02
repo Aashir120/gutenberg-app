@@ -20,7 +20,7 @@ export const announcementApi = BookApi.injectEndpoints({
         url: `books`,
         method: "GET",
       }),
-      providesTags: [BookApiTagTypes.Books, BookApiTagTypes.Analyze],
+      providesTags: [BookApiTagTypes.Books],
     }),
     getBookDetail: builder.query<
       {
