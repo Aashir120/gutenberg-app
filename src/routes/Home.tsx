@@ -1,11 +1,11 @@
-import { Input, Button, List, Card } from "antd";
+import { Input, Button, List, Card, Spin } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetBooksQuery } from "../redux/book.api";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { data: books } = useGetBooksQuery();
+  const { data: books, isLoading } = useGetBooksQuery();
   const [bookId, setBookId] = useState("");
 
   const handleSearch = () => {
@@ -32,7 +32,7 @@ const Home = () => {
           Search
         </Button>
       </div>
-      {books && (
+      {books ? (
         <List
           header={
             <h2 className="text-lg font-semibold text-gray-700">
@@ -58,6 +58,10 @@ const Home = () => {
           )}
           className="w-full max-w-3xl"
         />
+      ) : (
+        <div className="pt-32">
+          <Spin size="large" tip="data is loading, please wait..." />
+        </div>
       )}
     </div>
   );
